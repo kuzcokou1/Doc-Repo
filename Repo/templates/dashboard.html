@@ -22,7 +22,6 @@
 		.main-content {
 			width: 80%;
 			margin: 10% auto;
-			background: #;
 			-webkit-border-radius: 10px;
 			        border-radius: 10px;
 		}
@@ -35,8 +34,8 @@
 		.bg-purple {
 			background: #6a74ca;
 		}
-		.folder-1 {
-			background: url('folder-vector.png')no-repeat;
+		.folders {
+			background: url('static/folder.png')no-repeat;
 			-webkit-background-size: contain;
 			     -o-background-size: contain;
 			        background-size: contain;
@@ -76,10 +75,14 @@
 			<div class="col-sm-2">
 				<div class="rounded-left bg-white">
 					<div class="d-lg-inline-block container pt-5 pb-5">
-						<h4 class="text-muted">drive.</h4>
+						{% if session['logged_in'] %}
+							<h4 class="text-muted"><i class="fas fa-user">&nbsp;{{ session['username'] }}</i></h4>
+						{% else %}
+							<h4 class="text-muted"><i class="fas fa-user">&nbsp;docStore</i></h4>
+						{% endif %}
 					</div>
 					<div class="container pb-4">
-						<a href="" class="text-muted text-decoration-none shadow pl-2 pb-2 pt-2 rounded pr-2 text-center">
+						<a href="/home" class="text-muted text-decoration-none shadow pl-2 pb-2 pt-2 rounded pr-2 text-center">
 							<span>
 								<i class="fas fa-tachometer-alt"></i>
 							</span>
@@ -89,92 +92,108 @@
 					<div class="container">
 						<p class="text-muted pt-2">Files</p>
 						<div class="shadow rounded pl-2 pb-2 pt-2">
-							<div class="d-block justify-content-center">
+							<div class="d-block justify-content-center mb-2">
 								<a href="" class="text-muted text-decoration-none">
 									<span><i class="fas fa-folder-open"></i></span>
 									My Files
 								</a>
 							</div> 
-							<div class="d-block justify-content-center">
+							<div class="d-block justify-content-center mb-2">
 								<a href="" class="text-muted text-decoration-none">
 									<span><i class="fas fa-share"></i></span>
 									Sharing
 								</a>
 							</div>
-							<div class="d-block justify-content-center ">
+							<div class="d-block justify-content-center mb-2">
 								<a href="" class="text-muted text-decoration-none">
 									<span><i class="fas fa-folder"></i></span>
 									File requests
 								</a>
 							</div>
-							<div class="d-block justify-content-center">
+							<div class="d-block justify-content-center mb-2">
 								<a href="" class="text-muted text-decoration-none">
 									<span><i class="fas fa-trash-alt"></i></span>
 									Deleted files
 								</a>
 							</div>
 						</div>
-						<p class="text-muted pt-4">My List</p>
-						<div class="shadow rounded pl-2 pb-4 pt-2 mb-4">
-							<div class="d-block justify-content-center">
-								<a href="/login" class="text-muted text-decoration-none">
-									<span><i class="fas fa-sign-in-alt"></i></span>
-									Login
-								</a>
-							</div> 
-							<div class="d-block justify-content-center">
-								<a href="/register" class="text-muted text-decoration-none">
-									<span><i class="fas fa-sign-in-alt"></i></span>
-									Sign Up
-								</a>
+						<p class="text-muted pt-4"></p>
+						{% if session['logged_in'] %}
+							<div class="shadow rounded pl-2 pb-5 pt-2 mb-3	">
+								<div class="d-block justify-content-center">
+									<a href="/logout" class="text-muted text-decoration-none">
+										<span><i class="fas fa-sign-in-alt"></i></span>
+										Logout
+									</a>
+								</div> 
 							</div>
-						</div>
+						{% else %}
+							<div class="shadow rounded pl-2 pb-4 pt-2 mb-3">
+								<div class="d-block justify-content-center mb-2">
+									<a href="/login" class="text-muted text-decoration-none">
+										<span><i class="fas fa-sign-in-alt"></i></span>
+										Login
+									</a>
+								</div> 
+								<div class="d-block justify-content-center">
+									<a href="/register" class="text-muted text-decoration-none">
+										<span><i class="fas fa-sign-in-alt"></i></span>
+										Sign Up
+									</a>
+								</div>
+							</div>
+						{% endif %}
 					</div>
 				</div>
 			</div>
 			<div class="col-sm-7">
 				<div class="row">
-					<div class="col-sm-6">
-						<a href="">
-							<span><i class="fas fa-arrow-left text-muted mr-5 text-decoration-none pt-4"></i></span>
-						</a>
-						<a href="">
-							<span><i class="fas fa-arrow-right text-muted text-decoration-none pt-4"></i></span>
-						</a>
-					</div>
-					<div class="col-sm-6">
-						<form action="/upload" class="form-inline mt-4" enctype="multipart/form-data" method="POST">
-							<input type="file" name="file">
-							<input type="submit" name="submit" id="file" class="btn border btn-round text-uppercase justify-content-end fs-10 bg-purple text-white my-2 my-sm-0" value="Upload">
-						</form>
-					</div>
+					<nav class="navbar navbar-expand-lg w-100">
+					  	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Toggle navigation">
+					    	<span class="navbar-toggler-icon"></span>
+					  	</button>
+
+						<div class="collapse navbar-collapse" id="menu">
+						    <ul class="navbar-nav mr-auto">
+						      <li class="nav-item active">
+						        <a class="nav-link" href="#">
+						        	<span><i class="fas fa-arrow-left text-muted mr-5 text-decoration-none pt-4"></i></span>
+						        </a>
+						      </li>
+						      <li class="nav-item">
+						        <a class="nav-link" href="#">
+						        	<span><i class="fas fa-arrow-right text-muted text-decoration-none pt-4"></i></span>
+						        </a>
+						      </li>
+						    </ul>
+						    <form class="form-inline my-2 my-lg-0">
+						      <input class="form-control mr-sm-2" type="file" name="file">
+						      <input type="submit" name="submit" id="file" class="btn border btn-round text-uppercase justify-content-end fs-10 bg-purple text-white my-2 my-sm-0" value="Upload">
+						    </form>
+						</div>
+					</nav>
 				</div>
 				<p class="text-dark font-weight-bold">Recently used</p>
 				<div class="row">
-					<div class="col-sm-4">
-						<div class="folder-1 w-100 mh-100">
-							<p class="text-dark pt-3">Folder 1</p>
-							
+					{% for doc in docs %}
+						<div class="col-sm-4">
+							<div class="w-100 mh-100">
+								<p class="text-dark pt-3">{{ doc['docName'] }}</p>
+							</div>
 						</div>
-					</div>
-					<div class="col-sm-4">
-						<div class="folder-1 w-100 mh-100">
-							<p class="text-dark pt-3">Folder 2</p>
-							
+					{% else %}
+						<div class="col-sm-4">
+							<div class="w-100 mh-100">
+								<p class="text-dark pt-3">You have no documents</p>
+							</div>
 						</div>
-					</div>
-					<div class="col-sm-4">
-						<div class="folder-1 w-100 mh-100">
-							<p class="text-dark pt-3">Folder 3</p>
-							
-						</div>
-					</div>
+					{% endfor %}
 				</div>
 			</div>
 			<div class="col-sm-3">
 				<div class="container bg-white">
-					<form class="form-inline pt-4">
-					    <input class="border border-dark btn-round ml-2 p-1 w-75" type="text" placeholder="Search">
+					<form class="form-inline pt-4" method="POST" action="/search">
+					    <input class="border border-dark btn-round ml-2 p-1 w-75" type="text" name="search" placeholder="Search" required>
 					    <button class="btn btn-outline-dark rounded-circle my-2 my-sm-0" type="submit">
 					    	<span><i class="fas fa-search"></i></span>
 					    </button>

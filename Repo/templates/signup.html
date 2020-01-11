@@ -81,23 +81,26 @@
 				</div>
 			</div>
 			<div class="col-sm-7">
+				<a href="/home" class="text-dark">
+					<sapn><i class="fas fa-arrow-left mt-3"></i></sapn>
+				</a>
 				<p class="text-dark font-weight-bold mt-4">Create an Account</p>
 				<div class="row">
 					<form action="" method="POST" class="form-group mt-2 shadow p-4 bg-light mb-4">
 						<div class="form-group">
-							<input type="text" class="form-control d-inline w-50 float-left" name="first" placeholder="First Name*">
+							<input type="text" class="form-control d-inline w-50 float-left" name="first" placeholder="First Name*" required>
 						</div>
 						<div class="form-group">
-							<input type="text" class="form-control d-inline w-50" name="last" placeholder="Last Name*">
+							<input type="text" class="form-control d-inline w-50" name="last" placeholder="Last Name*" required>
 						</div>
 						<div class="form-group">
-							<input type="text" class="form-control" name="username" placeholder="Username*">
+							<input type="text" class="form-control" name="username" placeholder="Username*" required>
 						</div>
 						<div class="form-group">
-							<input type="text" class="form-control" name="email" placeholder="Email*">
+							<input type="text" class="form-control" name="email" placeholder="Email*" required>
 						</div>
 						<div class="form-group">
-							<input type="password" class="form-control" name="password" placeholder="Password*">
+							<input type="password" class="form-control" name="password" placeholder="Password*" required>
 						</div>
 						<div class="form-group">
 							<input type="submit" name="submit" value="Sign Up" class="btn btn-primary btn-block">
@@ -106,7 +109,7 @@
 							<label for="T_Cs" class="form-check-label">By clicking "Sign Up", you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Statement</a>. We ocassionally send you account related Emails.</label>
 						</div>
 						<div class="form-group">
-							<p class="text-muted">Already have an account? <a href="/login">Login</a></p>
+							<p class="text-muted text-center">Already have an account? <a href="/login">Login</a></p>
 						</div>
 					</form>	
 				</div>
