@@ -1,15 +1,20 @@
+# Imports
 from flask import Flask, render_template, session, redirect, flash, request, url_for
 from functools import wraps
 from werkzeug.utils import secure_filename
 from passlib.hash import sha256_crypt
-import os
+import os, sys, string, random
 import mysql.connector
 
+# App instance
 app = Flask(__name__)
 
+
 # uploads configuration
-UPLOAD_FOLDER = '/home/kuzco/Desktop/Projects/Doc-Repo/Repo/uploads'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'docx', 'xlsx', 'pptx'}
+UPLOAD_FOLDER = '/home/kuzco/Desktop/Projects/Doc-Repo/Repo/static/uploads'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'}
+UPLOADS_DEFAULT_URL = 'http://127.0.0.1:5000/static/uploads'
+
 
 # App configurations
 app.config['SECRET_KEY'] = b'da72b3628c9b68a709b2'
@@ -34,10 +39,12 @@ def is_logged_in(f):
 			return render_template('403.html')
 	return wrap
 
+
 # Main view decorator
+@app.route('/')
 @app.route('/home')
 def index():
-	cur.execute("SELECT * FROM repo.documents")
+	cur.execute("SELECT * FROM repo.users LEFT JOIN repo.documents ON users.username = documents.username ORDER BY docName DESC LIMIT 8")
 	docs = cur.fetchall()
 	return render_template("dashboard.html", title = "Dashboard", docs = docs)
 
@@ -97,24 +104,56 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+def get_extention(filename):
+	total = len(filename.split("."))
+	return filename.split(".")[total-1]
 
- # Upload decorator
-@app.route('/upload', methods=['GET', 'POST'])
+def randomString(length=10):
+	letters = string.ascii_lowercase
+	return ''.join(random.choice(letters) for i in range(length))
+
+
+# Upload decorator
+@app.route("/upload", methods=['GET', 'POST'])
 @is_logged_in
-def upload_file():
-	if request.method == 'POST':
-		if 'file' not in request.files:
-			flash('No file part', 'warning')
-			return redirect(request.url)
-		file = request.files['file']
-		if file.filename == '':
-			flash('No selected file', 'warning')
-			return redirect(request.url)
-		if file and allowed_file(file.filename):
-			filename = secure_filename(file.filename)
-			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-			flash('Uploaded successfully', 'success')
-			return redirect(url_for("index"))
+def upload():
+    if request.method == 'POST':
+        file = request.files['file']
+
+        # Get filename and folders
+        file_name = secure_filename(file.filename)
+        directory = UPLOADS_DEFAULT_URL
+        upload_folder = app.config['UPLOAD_FOLDER']
+        username = session['username']
+
+        if file.filename == '':
+            flash('Select a file please!', 'warning')
+            return redirect(url_for('index'))
+
+        if file and allowed_file(file.filename):
+            save_dir = os.path.join(upload_folder, directory)
+            if not os.path.exists(save_dir):
+                os.makedirs(save_dir)
+            new_name = randomString(16) + '.' + get_extention(file_name)
+            complete_path = os.path.join(save_dir, new_name)
+            file.save(complete_path)
+            size = os.stat(complete_path).st_size
+
+            # create our file from the model and add it to the database
+            cur.execute("INSERT INTO repo.documents (docName, new_name, dir_path, size, username, status) VALUES (%s, %s, %s, %s, %s, %s)", (file_name, new_name, complete_path, size, username, 1))
+            conn.commit()
+            flash("Uploaded successfully!","success")
+            return redirect(url_for('index'))
+        else:
+        	return redirect(url_for('index'))
+
+
+
+# Delete decorator
+# @app.route('/delete/<int:docId>')
+# @is_logged_in
+# def delete_file(docId):
+    
 
 
 # Search content
@@ -122,7 +161,7 @@ def upload_file():
 def search():
 	if request.method == 'POST':
 		search = request.form['search']
-		cur.execute("SELECT * FROM repo.documents WHERE docName LIKE '%s' " % search)
+		cur.execute("SELECT * FROM repo.documents WHERE docName LIKE '%"+search+"%'")
 		results = cur.fetchall()
 		if not results:
 			flash('No results were found', 'warning')

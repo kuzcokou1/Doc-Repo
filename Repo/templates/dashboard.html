@@ -41,10 +41,13 @@
 			        background-size: contain;
 			margin: 0;
 		}
+		a:hover {
+			color: #6a74ca;
+		}
 	</style>
 </head>
 <body>
-	<div class="main-content shadow">
+	<div class="main-content shadow-lg">
 		{% with messages = get_flashed_messages(with_categories = True) %}
 		  	{% if messages %}
 	    		{% for category, message in messages %}
@@ -82,63 +85,53 @@
 						{% endif %}
 					</div>
 					<div class="container pb-4">
-						<a href="/home" class="text-muted text-decoration-none shadow pl-2 pb-2 pt-2 rounded pr-2 text-center">
-							<span>
-								<i class="fas fa-tachometer-alt"></i>
-							</span>
-							My drive
+						<a href="/home" class="text-muted text-decoration-none pl-2 pb-2 pt-2 rounded pr-2 text-center">
+							<span><i class="fas fa-tachometer-alt"></i>&nbsp;My drive</span>
 						</a>	
 					</div>
 					<div class="container">
 						<p class="text-muted pt-2">Files</p>
-						<div class="shadow rounded pl-2 pb-2 pt-2">
+						<div class="rounded pl-2 pb-2 pt-2">
 							<div class="d-block justify-content-center mb-2">
 								<a href="" class="text-muted text-decoration-none">
-									<span><i class="fas fa-folder-open"></i></span>
-									My Files
+									<span><i class="fas fa-folder-open"></i>&nbsp;My Files</span>
 								</a>
 							</div> 
 							<div class="d-block justify-content-center mb-2">
 								<a href="" class="text-muted text-decoration-none">
-									<span><i class="fas fa-share"></i></span>
-									Sharing
+									<span><i class="fas fa-share"></i>&nbsp;Sharing</span>
 								</a>
 							</div>
 							<div class="d-block justify-content-center mb-2">
 								<a href="" class="text-muted text-decoration-none">
-									<span><i class="fas fa-folder"></i></span>
-									File requests
+									<span><i class="fas fa-archive"></i>&nbsp;My Archive</span>
 								</a>
 							</div>
 							<div class="d-block justify-content-center mb-2">
 								<a href="" class="text-muted text-decoration-none">
-									<span><i class="fas fa-trash-alt"></i></span>
-									Deleted files
+									<span><i class="fas fa-trash-alt"></i>&nbsp;Deleted files</span>
 								</a>
 							</div>
 						</div>
 						<p class="text-muted pt-4"></p>
 						{% if session['logged_in'] %}
-							<div class="shadow rounded pl-2 pb-5 pt-2 mb-3	">
+							<div class=" rounded pl-2 pb-5 pt-2 mb-3	">
 								<div class="d-block justify-content-center">
 									<a href="/logout" class="text-muted text-decoration-none">
-										<span><i class="fas fa-sign-in-alt"></i></span>
-										Logout
+										<span><i class="fas fa-sign-in-alt"></i>&nbsp;Logout</span>
 									</a>
 								</div> 
 							</div>
 						{% else %}
-							<div class="shadow rounded pl-2 pb-4 pt-2 mb-3">
+							<div class=" rounded pl-2 pb-4 pt-2 mb-3">
 								<div class="d-block justify-content-center mb-2">
 									<a href="/login" class="text-muted text-decoration-none">
-										<span><i class="fas fa-sign-in-alt"></i></span>
-										Login
+										<span><i class="fas fa-sign-in-alt"></i>&nbsp;Login</span>
 									</a>
 								</div> 
 								<div class="d-block justify-content-center">
 									<a href="/register" class="text-muted text-decoration-none">
-										<span><i class="fas fa-sign-in-alt"></i></span>
-										Sign Up
+										<span><i class="fas fa-sign-in-alt"></i>&nbsp;Sign Up</span>
 									</a>
 								</div>
 							</div>
@@ -166,19 +159,23 @@
 						        </a>
 						      </li>
 						    </ul>
-						    <form class="form-inline my-2 my-lg-0">
+						    <form class="form-inline my-2 my-lg-0" action="/upload" enctype="multipart/form-data" method="POST">
 						      <input class="form-control mr-sm-2" type="file" name="file">
 						      <input type="submit" name="submit" id="file" class="btn border btn-round text-uppercase justify-content-end fs-10 bg-purple text-white my-2 my-sm-0" value="Upload">
 						    </form>
 						</div>
 					</nav>
 				</div>
-				<p class="text-dark font-weight-bold">Recently used</p>
+				<p class="text-dark font-weight-bold">My documents</p>
 				<div class="row">
 					{% for doc in docs %}
 						<div class="col-sm-4">
-							<div class="w-100 mh-100">
-								<p class="text-dark pt-3">{{ doc['docName'] }}</p>
+							<div class="card">
+							  	<div class="card-body">
+							    	<h4 class="card-title">{{ doc['docName'] }}</h4>
+							    	<a href="{{ url_for('static', filename='uploads/http:/127.0.0.1:5000/static/uploads/'+doc['new_name']) }}" download="{{ doc['docName'] }}" class="btn bg-dark text-light"><i class="fas fa-download"></i></a>
+							    	<a href="/delete" class="btn btn-danger"><i class="fas fa-trash"></i></a>
+							  	</div>
 							</div>
 						</div>
 					{% else %}
@@ -193,22 +190,22 @@
 			<div class="col-sm-3">
 				<div class="container bg-white">
 					<form class="form-inline pt-4" method="POST" action="/search">
-					    <input class="border border-dark btn-round ml-2 p-1 w-75" type="text" name="search" placeholder="Search" required>
-					    <button class="btn btn-outline-dark rounded-circle my-2 my-sm-0" type="submit">
+					    <input class="form-control ml-2 p-1 w-75" type="text" name="search" placeholder="Search" required>
+					    <button class="btn btn-outline-dark rounded-circle ml-1 my-2 my-sm-0" type="submit" name="submit">
 					    	<span><i class="fas fa-search"></i></span>
 					    </button>
 					</form>
 					<div class="container pt-4 pb-4">
 						<!-- Stat cards -->
-						<p class="text-dark">Statistics</p>
-						<div class="card shadow rounded border-0 bg-light mt-4">
-							<h6 class="ml-3">Downloads</h6>
+						<p class="text-dark font-weight-bold border-bottom pb-2">Recently viewed</p>
+						<div class="card rounded border-0 bg-light mt-4">
+							<h6>Downloads</h6>
 						</div>
-						<div class="card shadow rounded border-0 bg-light mt-4 mb-4">
-							<h6 class="ml-3">Downloads</h6>
+						<div class="card rounded border-0 bg-light mt-4 mb-4">
+							<h6>Downloads</h6>
 						</div>
-						<div class="card shadow rounded border-0 bg-light">
-							<h6 class="ml-3">Downloads</h6>
+						<div class="card rounded border-0 bg-light">
+							<h6>Downloads</h6>
 						</div>
 						<!-- End of stat cards -->
 
