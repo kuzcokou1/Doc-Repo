@@ -81,11 +81,11 @@
 						{% if session['logged_in'] %}
 							<h4 class="text-muted"><i class="fas fa-user">&nbsp;{{ session['username'] }}</i></h4>
 						{% else %}
-							<h4 class="text-muted"><i class="fas fa-user">&nbsp;docStore</i></h4>
+							<h4 class="text-muted"><i class="fas fa-user"><a href="/">&nbsp;docStore</a></i></h4>
 						{% endif %}
 					</div>
 					<div class="container pb-4">
-						<a href="/home" class="text-muted text-decoration-none pl-2 pb-2 pt-2 rounded pr-2 text-center">
+						<a href="/dashboard" class="text-muted text-decoration-none pl-2 pb-2 pt-2 rounded pr-2 text-center">
 							<span><i class="fas fa-tachometer-alt"></i>&nbsp;My drive</span>
 						</a>	
 					</div>
@@ -172,16 +172,34 @@
 						<div class="col-sm-4">
 							<div class="card">
 							  	<div class="card-body">
-							    	<h4 class="card-title">{{ doc['docName'] }}</h4>
+							    	<h4 class="card-header m-2">{{ doc['docName'] }}</h4>
 							    	<a href="{{ url_for('static', filename='uploads/http:/127.0.0.1:5000/static/uploads/'+doc['new_name']) }}" download="{{ doc['docName'] }}" class="btn bg-dark text-light"><i class="fas fa-download"></i></a>
-							    	<a href="/delete" class="btn btn-danger"><i class="fas fa-trash"></i></a>
+							    	<a href="#!" class="btn btn-danger" data-toggle="modal" data-target="#remove"><i class="fas fa-trash"></i></a>
+
+									<!-- Modal -->
+									<div class="modal" id="remove" tabindex="-1" role="dialog" aria-labelledby="removableModal" aria-hidden="true">
+									    <div class="modal-dialog modal-dialog-centered" role="document">
+									        <div class="modal-content">
+									            <div class="modal-header">
+									                <h5 class="modal-title" id="removableModal">Are you sure you want to delete this document?</h5>
+									                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									                    <span aria-hidden="true">×</span>
+									                </button>
+									            </div>
+									            <div class="modal-footer">
+									                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+									                <a href="/delete" class="btn btn-danger">Delete</a>
+									            </div>
+									        </div>
+									    </div>
+									</div>
 							  	</div>
 							</div>
 						</div>
 					{% else %}
 						<div class="col-sm-4">
 							<div class="w-100 mh-100">
-								<p class="text-dark pt-3">You have no documents</p>
+								<p class="text-dark pt-3">You currently have no documents saved!</p>
 							</div>
 						</div>
 					{% endfor %}

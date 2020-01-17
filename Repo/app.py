@@ -40,11 +40,35 @@ def is_logged_in(f):
 	return wrap
 
 
-# Main view decorator
+# Login form decorator
 @app.route('/')
-@app.route('/home')
-def index():
-	cur.execute("SELECT * FROM repo.users LEFT JOIN repo.documents ON users.username = documents.username ORDER BY docName DESC LIMIT 8")
+@app.route('/login', methods = ['GET', 'POST'])
+def login():
+	if request.method == 'POST':
+	    username = request.form['username']
+	    password = request.form['password']
+
+	    cur.execute("SELECT * FROM repo.users WHERE users.username = '%s'" % (username))
+	    data = cur.fetchall()
+	    for row in data:
+	    	if sha256_crypt.verify(password, row['pwd']) == False:
+	    		flash('Passwords do not match, please try again!', 'danger') 
+		    	return redirect(url_for('login'))  
+	    	else:
+	    		session['logged_in'] = True
+	    		session['username'] = username
+	    		flash('You are now logged in', 'success')
+	    		return redirect(url_for('dashboard'))
+	    flash('Login credentials do not match, please try again!', 'warning')
+	return render_template('login.html', title = 'Login to your account')
+
+
+# Dashboard decorator
+@app.route('/dashboard')
+@is_logged_in
+def dashboard():
+	session['logged_in'] = True
+	cur.execute("SELECT users.username, documents.username, documents.new_name, documents.docName FROM users INNER JOIN documents ON users.username = documents.username WHERE users.username = '%s' ORDER BY docName DESC LIMIT 8" %session['username'])
 	docs = cur.fetchall()
 	return render_template("dashboard.html", title = "Dashboard", docs = docs)
 
@@ -62,31 +86,8 @@ def register():
 		cur.execute("INSERT INTO repo.users(fname, lname, username, email, pwd) VALUES(%s, %s, %s, %s, %s)", (first, last, username, email, pwd))
 		conn.commit()
 		flash("Account created for %s!" %username, 'success')
-		return redirect(url_for('index'))
+		return redirect(url_for('login'))
 	return render_template('signup.html', title = 'Register')    
-
-
-
-# Login form decorator
-@app.route('/login', methods = ['GET', 'POST'])
-def login():
-	if request.method == 'POST':
-	    username = request.form['username']
-	    password = request.form['password']
-
-	    cur.execute("SELECT * FROM repo.users WHERE users.username = '%s'" % (username))
-	    data = cur.fetchall()
-	    for row in data:
-	    	if sha256_crypt.verify(password, row['pwd']) == False:
-	    		flash('Passwords do not match, please try again!', 'danger') 
-		    	return redirect(url_for('login'))  
-	    	else:
-	    		session['logged_in'] = True
-	    		session['username'] = username
-	    		flash('You are now logged in', 'success')
-	    		return redirect(url_for('index'))
-	    flash('Login credentials do not match, please try again!', 'warning')
-	return render_template('login.html', title = 'Login to your account')
 
 
 
@@ -96,7 +97,7 @@ def login():
 def logout():
 	session.clear()
 	flash('You are now logged out!', 'success')
-	return redirect(url_for('index'))
+	return redirect(url_for('login'))
 
 
  # Function to check for allowed files to upload
@@ -121,14 +122,14 @@ def upload():
         file = request.files['file']
 
         # Get filename and folders
-        file_name = secure_filename(file.filename)
+        file_name = secure_filename(file.filename).lower()
         directory = UPLOADS_DEFAULT_URL
         upload_folder = app.config['UPLOAD_FOLDER']
         username = session['username']
 
         if file.filename == '':
             flash('Select a file please!', 'warning')
-            return redirect(url_for('index'))
+            return redirect(url_for('dashboard'))
 
         if file and allowed_file(file.filename):
             save_dir = os.path.join(upload_folder, directory)
@@ -143,17 +144,36 @@ def upload():
             cur.execute("INSERT INTO repo.documents (docName, new_name, dir_path, size, username, status) VALUES (%s, %s, %s, %s, %s, %s)", (file_name, new_name, complete_path, size, username, 1))
             conn.commit()
             flash("Uploaded successfully!","success")
-            return redirect(url_for('index'))
+            return redirect(url_for('dashboard'))
         else:
-        	return redirect(url_for('index'))
-
+        	return redirect(url_for('dashboard'))
 
 
 # Delete decorator
-# @app.route('/delete/<int:docId>')
-# @is_logged_in
-# def delete_file(docId):
-    
+@app.route('/delete/<int:docId>')
+@is_logged_in
+def delete_file(docId):
+    if session['username']:
+    	cur.execute("SELECT DISTINCT documents.docId FROM repo.documents WHERE documents.docId = '%s'" (docId))
+    	docId = cur.fetchone()
+        upload_folder = app.config['UPLOAD_FOLDER']
+        try:
+            folder = os.path.join(upload_folder, file.docId)
+            complete_path = os.path.join(folder, file.name)
+            if 'docId' in docId:
+            	cur.execute("DELETE FROM repo.documents WHERE docId = '%s'" %docId)
+            	conn.commit()
+            	flash("File deleted successfully!", 'success')
+            	return redirect(url_for('dashboard', docId = docId))
+            else:
+            	conn.rollback()
+            	return redirect(url_for('dashboard'))
+        except:
+            flash("An unexpected error occured!",'warning')
+            conn.rollback()
+    else:
+        flash("Access denied!",'danger')
+        return redirect(url_for('dashboard'))
 
 
 # Search content
@@ -161,17 +181,23 @@ def upload():
 def search():
 	if request.method == 'POST':
 		search = request.form['search']
-		cur.execute("SELECT * FROM repo.documents WHERE docName LIKE '%"+search+"%'")
+		cur.execute("SELECT users.username, documents.username, documents.docName \
+			FROM users INNER JOIN documents ON users.username = documents.username \
+			WHERE users.username = '%s' \
+			AND documents.docName LIKE '%s'" %(session['username'], search))
 		results = cur.fetchall()
 		if not results:
 			flash('No results were found', 'warning')
-			return redirect(url_for('index'))
+			return redirect(url_for('dashboard'))
 		else:
 			if len(results) > 1:
 				flash('Found ' + str(len(results)) + ' matching results', 'success')
+				return render_template('search.html', title = "Search", results = results)
 			else:
 				flash('Found ' + str(len(results)) + ' matching result', 'success')
-			return redirect(url_for('index'))			
+				return render_template('search.html', title = "Search", results = results)
+			return redirect(url_for('dashboard'))			
+
 
 
 
