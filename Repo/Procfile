@@ -1,0 +1,2 @@
+newrelic-admin run-program gunicorn --workers 4 --worker-class gevent --timeout 60 doc-repo.wsgi
+
