@@ -1,4 +1,4 @@
 flask
-passlib.hash
+sha256_crypt
 mysql.connector
 gunicorn
