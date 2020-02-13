@@ -1,4 +1,4 @@
 flask
 passlib
-mysql.connector
+mysql-connector
 gunicorn
