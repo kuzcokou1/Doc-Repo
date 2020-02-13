@@ -1,0 +1,4 @@
+flask
+passlib.hash
+mysql.connector
+gunicorn

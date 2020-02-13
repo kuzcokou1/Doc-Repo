@@ -86,7 +86,7 @@
 					</div>
 					<div class="container pb-4">
 						<a href="/dashboard" class="text-muted text-decoration-none pl-2 pb-2 pt-2 rounded pr-2 text-center">
-							<span><i class="fas fa-tachometer-alt"></i>&nbsp;My drive</span>
+							<span><i class="fas fa-tachometer-alt"></i>&nbsp;My documents</span>
 						</a>	
 					</div>
 					<div class="container">
@@ -159,7 +159,7 @@
 						        </a>
 						      </li>
 						    </ul>
-						    <form class="form-inline my-2 my-lg-0" action="/upload" enctype="multipart/form-data" method="POST">
+						    <form class="form-inline my-2 my-lg-0 mr-auto" action="/upload" enctype="multipart/form-data" method="POST">
 						      <input class="form-control mr-sm-2" type="file" name="file">
 						      <input type="submit" name="submit" id="file" class="btn border btn-round text-uppercase justify-content-end fs-10 bg-purple text-white my-2 my-sm-0" value="Upload">
 						    </form>
@@ -170,7 +170,7 @@
 				<div class="row">
 					{% for doc in docs %}
 						<div class="col-sm-4">
-							<div class="card">
+							<div class="card h-100">
 							  	<div class="card-body">
 							    	<h4 class="card-header m-2">{{ doc['docName'] }}</h4>
 							    	<a href="{{ url_for('static', filename='uploads/http:/127.0.0.1:5000/static/uploads/'+doc['new_name']) }}" download="{{ doc['docName'] }}" class="btn bg-dark text-light"><i class="fas fa-download"></i></a>
@@ -188,7 +188,7 @@
 									            </div>
 									            <div class="modal-footer">
 									                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-									                <a href="/delete" class="btn btn-danger">Delete</a>
+									                <a href="/delete/{{ doc['docId']}}" class="btn btn-danger">Delete</a>
 									            </div>
 									        </div>
 									    </div>
@@ -204,6 +204,9 @@
 						</div>
 					{% endfor %}
 				</div>
+				<!-- <div>
+					<p class="btn btn-dark mt-4"><a href="/view_all" class="text-light card-link">More</a></p>
+				</div> -->
 			</div>
 			<div class="col-sm-3">
 				<div class="container bg-white">
@@ -215,17 +218,10 @@
 					</form>
 					<div class="container pt-4 pb-4">
 						<!-- Stat cards -->
-						<p class="text-dark font-weight-bold border-bottom pb-2">Recently viewed</p>
+						<p class="text-dark font-weight-bold border-bottom pb-2">Information</p>
 						<div class="card rounded border-0 bg-light mt-4">
-							<h6>Downloads</h6>
+							<h6>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quis velit culpa magni facere magnam hic nihil iste, cum perspiciatis, similique provident repellat, nobis eaque perferendis harum inventore, ipsam molestias labore.</h6>
 						</div>
-						<div class="card rounded border-0 bg-light mt-4 mb-4">
-							<h6>Downloads</h6>
-						</div>
-						<div class="card rounded border-0 bg-light">
-							<h6>Downloads</h6>
-						</div>
-						<!-- End of stat cards -->
 
 						<!-- Vector Here -->
 
