@@ -30,7 +30,7 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 # Databse connection
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 # conn = mysql.connector.connect(host = 'ec2-3-230-106-126.compute-1.amazonaws.com', user = 'rjogzxmylgljgt', passwd = 'aab883443453ddf4ebb65b54aa522ffa1e3f222fe2da9f6cbf392fd265217e65', database = 'ddg7riqn3ejl3f')
-cur = conn.cursor(dictionary = True)
+cur = conn.cursor()
 
 
 # Check if a user is logged in
