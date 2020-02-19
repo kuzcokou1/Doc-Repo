@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 
 # uploads configuration
-UPLOAD_FOLDER = ''
+UPLOAD_FOLDER = '/static/uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'}
 UPLOADS_DEFAULT_URL = '/'
 
@@ -212,4 +212,4 @@ def search():
 
 
 if __name__ == '__main__':
-    app.run(debug = True)
+    app.run(debug = True, port = '5432')
