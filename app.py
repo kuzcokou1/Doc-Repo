@@ -25,8 +25,8 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
 
 # Databse connection
-# conn = mysql.connector.connect(host = '127.0.0.1', user = 'root', passwd = '', database = 'repo')
-# cur = conn.cursor(dictionary = True)
+conn = mysql.connector.connect(host = '127.0.0.1', user = 'root', passwd = '', database = 'repo')
+cur = conn.cursor(dictionary = True)
 
 
 # Check if a user is logged in
