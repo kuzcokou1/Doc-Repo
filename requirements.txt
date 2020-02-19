@@ -2,3 +2,4 @@ flask
 passlib
 mysql-connector
 gunicorn
+psycopg2
