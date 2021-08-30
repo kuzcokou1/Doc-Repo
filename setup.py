@@ -16,7 +16,6 @@ app = Flask(__name__)
 UPLOAD_FOLDER = '/static/uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'}
 UPLOADS_DEFAULT_URL = '/'
-DATABASE_URL = os.environ['DATABASE_URL']
 
 
 # App configurations
@@ -24,11 +23,10 @@ app.config['SECRET_KEY'] = b'da72b3628c9b68a709b2'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
-app.config['DATABASE_URL'] = 'postgres://rjogzxmylgljgt:aab883443453ddf4ebb65b54aa522ffa1e3f222fe2da9f6cbf392fd265217e65@ec2-3-230-106-126.compute-1.amazonaws.com:5432/ddg7riqn3ejl3f'
 
 
 # Databse connection
-conn = mysql.connector.connect(host = 'ec2-3-230-106-126.compute-1.amazonaws.com', user = 'rjogzxmylgljgt', passwd = 'aab883443453ddf4ebb65b54aa522ffa1e3f222fe2da9f6cbf392fd265217e65', database = 'ddg7riqn3ejl3f')
+conn = mysql.connector.connect(host = 'localhost', user = 'root', passwd = '', database = '')
 cur = conn.cursor()
 
 
